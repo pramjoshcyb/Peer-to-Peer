@@ -1,6 +1,8 @@
-from PyQt5.QtWidgets import QApplication, QVBoxLayout, QWidget
+from PyQt5.QtWidgets import QApplication, QHBoxLayout, QVBoxLayout, QWidget
 from PyQt5.QtWidgets import QLabel, QPushButton
 
+
+from button import Button
 
 class App():
     """The App class encapsulates our application"""
@@ -10,16 +12,34 @@ class App():
 
         window = QWidget()
         layout = QVBoxLayout()
+        # layout ,----------------.
+        #
+        #            rowWidget  A
+        #            rowWidget  A
+        #            rowWidget  A
+        #
+        #        `----------------`
 
-        label = QLabel('There are 50 cookies in the cookie jar')
-        layout.addWidget(label)
-        button = QPushButton('Eat cookie')
-        layout.addWidget(button)
+        # rowWidget [  rowLayout <- B  ]
 
-        self.cookies = 50
+        # rowLayout [  button <- C   button <- C   button <- C  ]
+
+        #layout.addWidget(label)
+        buttons = []
+
+        for i in range(8):
+            rowWidget = QWidget()
+            layout.addWidget(rowWidget)     # A
+
+            rowLayout = QHBoxLayout()
+            rowWidget.setLayout(rowLayout)  # B
+            for j in range(8):
+                button = Button('x', j, i)
+                rowLayout.addWidget(button) # C
+                buttons.append(button)
 
         # connect a handler to the 'clicked' signal of the button
-        button.clicked.connect(self.button_clicked)
+        #button.clicked.connect(self.button_clicked)
 
         window.setLayout(layout)
         window.show()
@@ -28,8 +48,9 @@ class App():
         self.app = app
         self.window = window
         self.layout = layout
-        self.label = label
-        self.button = button
+        self.buttons = buttons
+        #self.label = label
+        #self.button = button
 
     def button_clicked(self):
         self.cookies -= 1
