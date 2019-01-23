@@ -33,10 +33,13 @@ class App():
 
             rowLayout = QHBoxLayout()
             rowWidget.setLayout(rowLayout)  # B
+
+            button_row = []
             for j in range(8):
-                button = Button('x', j, i)
+                button = Button(' ', self.game_over, self.reveal, j, i)
                 rowLayout.addWidget(button) # C
-                buttons.append(button)
+                button_row.append(button)
+            buttons.append(button_row)
 
         # connect a handler to the 'clicked' signal of the button
         #button.clicked.connect(self.button_clicked)
@@ -52,9 +55,36 @@ class App():
         #self.label = label
         #self.button = button
 
-    def button_clicked(self):
-        self.cookies -= 1
-        self.label.setText('There are ' + str(self.cookies) + ' cookies in the cookie jar')
+
+    def game_over(self):
+        for button_row in self.buttons:
+            for button in button_row:
+                button.explode()
+
+    def reveal(self, x, y):
+
+        counter = 0
+
+        # work out how many mines are adjacent
+        for my_y in range(y-1, y+2):
+            for my_x in range(x-1, x+2):
+
+                if (my_y >= 0 and my_y < 8
+                and my_x >= 0 and my_x < 8):
+    
+                    if self.buttons[my_y][my_x].mine:
+                        counter += 1
+
+        # might be 0, if so then open surrounding buttons
+        if counter == 0:
+            for my_y in range(y-1, y+2):
+                for my_x in range(x-1, x+2):
+
+                    if (my_y >= 0 and my_y < 8
+                    and my_x >= 0 and my_x < 8):     
+                        self.buttons[my_y][my_x].click_handler()
+        
+        return counter
 
     def run(self):
         """Call this method to run the app (starts the event loop)"""
