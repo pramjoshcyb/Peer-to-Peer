@@ -4,6 +4,7 @@ from PyQt5.QtWidgets import QLabel, QPushButton
 
 from button import Button
 
+
 class App():
     """The App class encapsulates our application"""
 
@@ -27,7 +28,7 @@ class App():
         #layout.addWidget(label)
         buttons = []
 
-        for i in range(8):
+        for i in range(3):
             rowWidget = QWidget()
             layout.addWidget(rowWidget)     # A
 
@@ -35,8 +36,8 @@ class App():
             rowWidget.setLayout(rowLayout)  # B
 
             button_row = []
-            for j in range(8):
-                button = Button(' ', self.game_over, self.reveal, j, i)
+            for j in range(3):
+                button = Button(' ', self.choice_send, j, i) #self.game_over
                 rowLayout.addWidget(button) # C
                 button_row.append(button)
             buttons.append(button_row)
@@ -69,8 +70,8 @@ class App():
         for my_y in range(y-1, y+2):
             for my_x in range(x-1, x+2):
 
-                if (my_y >= 0 and my_y < 8
-                and my_x >= 0 and my_x < 8):
+                if (my_y >= 0 and my_y < 3
+                and my_x >= 0 and my_x < 3):
     
                     if self.buttons[my_y][my_x].mine:
                         counter += 1
@@ -80,8 +81,8 @@ class App():
             for my_y in range(y-1, y+2):
                 for my_x in range(x-1, x+2):
 
-                    if (my_y >= 0 and my_y < 8
-                    and my_x >= 0 and my_x < 8):     
+                    if (my_y >= 0 and my_y < 3
+                    and my_x >= 0 and my_x < 3):     
                         self.buttons[my_y][my_x].click_handler()
         
         return counter
@@ -89,3 +90,7 @@ class App():
     def run(self):
         """Call this method to run the app (starts the event loop)"""
         self.app.exec_()
+
+    def choice_send(self): # a new method made by me for the noughts app where it sends the coordinates to the other person
+        self.connection.send(self.x, self.y)
+    choice_send
