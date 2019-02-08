@@ -93,4 +93,4 @@ class App():
 
     def choice_send(self): # a new method made by me for the noughts app where it sends the coordinates to the other person
         self.connection.send(self.x, self.y)
-    choice_send
+    choice_send()
