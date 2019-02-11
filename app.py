@@ -1,96 +1,228 @@
-from PyQt5.QtWidgets import QApplication, QHBoxLayout, QVBoxLayout, QWidget
-from PyQt5.QtWidgets import QLabel, QPushButton
+from PyQt5.QtCore import Qt, QTimer
+from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QGridLayout, QSpacerItem
+from PyQt5.QtWidgets import QLabel, QPushButton, QLineEdit, QTextEdit, QRadioButton
+from PyQt5.QtGui import QPalette
 
+
+from network import Network
 
 from button import Button
 
+# NAMING CONVENTION we will use for PyQt widgets
+# txt_ is a multi line text box
+# inp_ is an input box
+# btn_ is a button
+# lbl_ is a label
+
+
+
+def make_container_widget(widgets, vertical = True):
+    """Takes a list of widgets and creates a vertical or horizontal kayout
+       with the widgets in it."""
+
+    new_widget = QWidget()
+
+    if vertical:
+        new_layout = QVBoxLayout()
+    else:
+        new_layout = QHBoxLayout()
+    
+    for widget in widgets:
+        new_layout.addWidget(widget)
+    
+    new_widget.setLayout(new_layout)
+
+    return new_widget
+    
+
+
+
 
 class App():
-    """The App class encapsulates our application"""
-
+    """This class encapsulates out application"""
+    # constructor
     def __init__(self):
+
+        # counter for number of clicks
+        self.button_clicks = 0
+
+        # Create a GUI application
         app = QApplication([])
 
-        window = QWidget()
-        layout = QVBoxLayout()
-        # layout ,----------------.
-        #
-        #            rowWidget  A
-        #            rowWidget  A
-        #            rowWidget  A
-        #
-        #        `----------------`
+        # Style app
+        app.setStyle('Fusion')
+        palette = QPalette()
+        palette.setColor(QPalette.ButtonText, Qt.red)
+        app.setPalette(palette)
 
-        # rowWidget [  rowLayout <- B  ]
+        # Create our root window
+        window = QMainWindow()
 
-        # rowLayout [  button <- C   button <- C   button <- C  ]
+        self.create_connection_pane()
+        self.create_game_pane()
 
-        #layout.addWidget(label)
+        # Initially display the connection pane
+        window.setCentralWidget(self.connection_pane)
+
+        # Everything has been set up, create the window
+        window.show()
+
+        # Store the things we will need later in attributes
+        self.app = app
+        self.window = window
+
+        self.timer = QTimer()
+        self.timer.start(100)
+        self.timer.timeout.connect(self.tick)
+
+        self.accepting = False
+        self.receiving = False
+        self.connection = None
+
+    def run(self):
+        # Enter the application's main loop
+        # This method call doesn't end until the main window is closed
+        self.app.exec_()
+
+        print("Application was closed")
+
+    def create_connection_pane(self):
+        # Create the pane that allows the user to initiate a connection
+
+        # choose listener or client radio buttons
+        rad_listen  = QRadioButton('Wait for a connection')
+        rad_connect = QRadioButton('Connect to...')
+
+        rad_listen.setChecked(True)
+
+        # Hideable listen pane
+
+        # displays the IP address of the user
+        lbl_ip_address = QLabel(Network.get_ip())
+
+        # for the user to listen for an incoming connection
+        btn_listen = QPushButton('Wait for connection')
+        btn_listen.clicked.connect(self.btn_listen_clicked)
+
+        listen_pane = make_container_widget([lbl_ip_address, btn_listen])
+
+
+        # for the user to type an IP address and connect to it
+        lbl_connect_address = QLabel('IP address')
+        inp_connect_address = QLineEdit()
+        inp_connect_address.setText('localhost')
+
+        btn_connect = QPushButton('Connect')
+        btn_connect.clicked.connect(self.btn_connect_clicked)
+
+        connect_pane = make_container_widget([lbl_connect_address, inp_connect_address, btn_connect])
+
+
+        # assemble everything into a container
+        connection_pane = make_container_widget([rad_listen, rad_connect, listen_pane, connect_pane])
+
+        # set up the radio buttons to control which pane is visible
+        def show_listen_pane():
+            connect_pane.hide()
+            connection_pane.adjustSize()
+            listen_pane.show()
+
+        def show_client_pane():
+            listen_pane.hide()
+            connection_pane.adjustSize()
+            connect_pane.show()
+        
+        rad_listen.clicked.connect(show_listen_pane)
+        rad_connect.clicked.connect(show_client_pane)
+
+        show_listen_pane()
+
+
+        self.connection_pane = connection_pane
+        self.inp_connect_address = inp_connect_address
+
+    def create_game_pane(self):
+        # Create the pane that allows the user to chat
+        chat_pane = QWidget()
+
+        # Create a layout for the chat pane
+        chat_layout = QGridLayout()
+
         buttons = []
 
         for i in range(3):
-            rowWidget = QWidget()
-            layout.addWidget(rowWidget)     # A
-
-            rowLayout = QHBoxLayout()
-            rowWidget.setLayout(rowLayout)  # B
-
             button_row = []
             for j in range(3):
-                button = Button(' ', self.choice_send, j, i) #self.game_over
-                rowLayout.addWidget(button) # C
+                button = Button(' ', self.make_choice, j, i)
+                chat_layout.addWidget(button, i, j) # C
                 button_row.append(button)
             buttons.append(button_row)
 
-        # connect a handler to the 'clicked' signal of the button
-        #button.clicked.connect(self.button_clicked)
+        chat_pane.setLayout(chat_layout)
 
-        window.setLayout(layout)
-        window.show()
-
-        # store the variables we will need later in attributes
-        self.app = app
-        self.window = window
-        self.layout = layout
         self.buttons = buttons
-        #self.label = label
-        #self.button = button
+        self.chat_layout = chat_layout
+        self.chat_pane = chat_pane
 
+    def tick(self):
 
-    def game_over(self):
-        for button_row in self.buttons:
-            for button in button_row:
-                button.explode()
-
-    def reveal(self, x, y):
-
-        counter = 0
-
-        # work out how many mines are adjacent
-        for my_y in range(y-1, y+2):
-            for my_x in range(x-1, x+2):
-
-                if (my_y >= 0 and my_y < 3
-                and my_x >= 0 and my_x < 3):
-    
-                    if self.buttons[my_y][my_x].mine:
-                        counter += 1
-
-        # might be 0, if so then open surrounding buttons
-        if counter == 0:
-            for my_y in range(y-1, y+2):
-                for my_x in range(x-1, x+2):
-
-                    if (my_y >= 0 and my_y < 3
-                    and my_x >= 0 and my_x < 3):     
-                        self.buttons[my_y][my_x].click_handler()
+        if self.accepting:
+            self.connection = self.listener.try_get_connection()
+            if self.connection is not None:
+                self.accepting = False
+                self.receiving = True
+                #self.txt_history.append('Connected!\n')
         
-        return counter
+        elif self.receiving:
+            they_sent = self.connection.try_receive()
+            if they_sent is not None:
+                display = 'Them: ' + str(they_sent, 'utf-8')
+                #self.txt_history.append(display)
 
-    def run(self):
-        """Call this method to run the app (starts the event loop)"""
-        self.app.exec_()
+        elif self.connection is not None:
+            self.connection.try_connect()
+            if self.connection.connected:
+                self.receiving = True
+                #self.txt_history.append('Connected!\n')
+        
 
-    def choice_send(self): # a new method made by me for the noughts app where it sends the coordinates to the other person
-        self.connection.send(self.x, self.y)
-    choice_send()
+
+
+    def btn_connect_clicked(self):
+        # When connect button is clicked, show the chat pane
+        self.window.setCentralWidget(self.chat_pane)
+
+        #self.txt_history.append('Connecting...')
+
+        self.connection = Network.Connection(self.inp_connect_address.text(), 5000)
+
+
+
+    def btn_listen_clicked(self):
+        # Currently when listen button is clicked, show the chat pane
+        self.window.setCentralWidget(self.chat_pane)
+
+        #self.txt_history.append('Waiting for connection...')
+
+        self.listener = Network.Listener(5000)
+
+        self.accepting = True
+
+
+
+
+    def send(self):
+        user_typed = self.inp_message.text()
+
+        # add "You: " and put it in display window
+        display = "You: " + user_typed
+        self.txt_history.append(display)
+
+        # make the input box blank again
+        self.inp_message.setText(None)
+
+        self.connection.send(bytes(user_typed, 'utf-8'))
+
+    def make_choice(x, y): # a new method made by me for the noughts app where it sends the coordinates to the other person
+        self.connection.send(x, y)
+    

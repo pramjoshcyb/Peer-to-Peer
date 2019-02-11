@@ -25,8 +25,7 @@ class Button(QPushButton):
         self.clicked.connect(self.click_handler)
 
 
-    def click_handler(self):
-        
+    def click_handler(self, x, y): # needs to have argument self, x and y position
         self.setText("X")
         self.setDisabled(True)
         self.choice_fn(self.x, self.y)

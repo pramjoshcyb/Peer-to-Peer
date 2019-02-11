@@ -1,17 +1,11 @@
+from PyQt5.QtWidgets import QApplication, QHBoxLayout, QVBoxLayout, QWidget, QMainWindow, QSpacerItem, QLabel, QPushButton, QLineEdit, QTextEdit, QRadioButton
+from PyQt5.QtWidgets import QLabel, QPushButton
 from PyQt5.QtCore import Qt, QTimer
-from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QSpacerItem
-from PyQt5.QtWidgets import QLabel, QPushButton, QLineEdit, QTextEdit, QRadioButton
 from PyQt5.QtGui import QPalette
 
 
-from network import Network
-
-
-# NAMING CONVENTION we will use for PyQt widgets
-# txt_ is a multi line text box
-# inp_ is an input box
-# btn_ is a button
-# lbl_ is a label
+from button import Button
+# from network import Network
 
 
 
@@ -33,59 +27,82 @@ def make_container_widget(widgets, vertical = True):
 
     return new_widget
     
-
-
-
-
 class ChatUI():
     """This class encapsulates out application"""
     # constructor
-    def __init__(self):
 
-        # counter for number of clicks
-        self.button_clicks = 0
 
-        # Create a GUI application
-        app = QApplication([])
+def __init__(self):
+     for i in range(3):
+            rowWidget = QWidget()
+            layout.addWidget(rowWidget)     # A
 
-        # Style app
-        app.setStyle('Fusion')
-        palette = QPalette()
-        palette.setColor(QPalette.ButtonText, Qt.red)
-        app.setPalette(palette)
+            rowLayout = QHBoxLayout()
+            rowWidget.setLayout(rowLayout)  # B
 
-        # Create our root window
-        window = QMainWindow()
+            button_row = []
+            for j in range(3):
+                button = Button(' ', self.choice_send, j, i) #self.game_over
+                rowLayout.addWidget(button) # C
+                button_row.append(button)
+            buttons.append(button_row)
 
-        self.create_connection_pane()
-        self.create_chat_pane()
+        # connect a handler to the 'clicked' signal of the button
+        #button.clicked.connect(self.button_clicked)
 
-        # Initially display the connection pane
-        window.setCentralWidget(self.connection_pane)
+# window.setLayout(layout)
+# window.show()
+# NAMING CONVENTION we will use for PyQt widgets
+# txt_ is a multi line text box
+# inp_ is an input box
+# btn_ is a button
+# lbl_ is a label
 
-        # Everything has been set up, create the window
-        window.show()
 
-        # Store the things we will need later in attributes
-        self.app = app
-        self.window = window
+# counter for number of clicks
+self.button_clicks = 0
 
-        self.timer = QTimer()
-        self.timer.start(100)
-        self.timer.timeout.connect(self.tick)
+# Create a GUI application
+app = QApplication([])
 
-        self.accepting = False
-        self.receiving = False
-        self.connection = None
+# Style app
+app.setStyle('Fusion')
+palette = QPalette()
+palette.setColor(QPalette.ButtonText, Qt.red)
+app.setPalette(palette)
 
-    def run(self):
+# Create our root window
+window = QMainWindow()
+
+self.create_connection_pane()
+self.create_chat_pane()
+
+# Initially display the connection pane
+window.setCentralWidget(self.connection_pane)
+
+# Everything has been set up, create the window
+window.show()
+
+# Store the things we will need later in attributes
+self.app = app
+self.window = window
+
+self.timer = QTimer()
+self.timer.start(100)
+self.timer.timeout.connect(self.tick)
+
+self.accepting = False
+self.receiving = False
+self.connection = None
+
+def run(self):
         # Enter the application's main loop
         # This method call doesn't end until the main window is closed
         self.app.exec_()
 
         print("Application was closed")
 
-    def create_connection_pane(self):
+def create_connection_pane(self):
         # Create the pane that allows the user to initiate a connection
 
         # choose listener or client radio buttons
@@ -140,14 +157,14 @@ class ChatUI():
         self.connection_pane = connection_pane
         self.inp_connect_address = inp_connect_address
 
-    def create_chat_pane(self):
+def create_chat_pane(self):
         # Create the pane that allows the user to chat
         chat_pane = QWidget()
 
         # Create a layout for the chat pane
         chat_layout = QVBoxLayout()
         buttons = []
-        
+
         # Create the chat history box
         txt_history = QTextEdit()
         txt_history.setPlainText('')
@@ -178,7 +195,7 @@ class ChatUI():
         self.chat_layout = chat_layout
         self.chat_pane = chat_pane
 
-    def tick(self):
+def tick(self):
 
         if self.accepting:
             self.connection = self.listener.try_get_connection()
@@ -198,14 +215,11 @@ class ChatUI():
             if self.connection.connected:
                 self.receiving = True
                 self.txt_history.append('Connected!\n')
-
-    def choice_send(self) # a new method made by me for the noughts app where it sends the coordinates to the other person
-        self.connection.send(self.x, self.y)
         
 
 
 
-    def btn_connect_clicked(self):
+def btn_connect_clicked(self):
         # When connect button is clicked, show the chat pane
         self.window.setCentralWidget(self.chat_pane)
 
@@ -215,7 +229,7 @@ class ChatUI():
 
 
 
-    def btn_listen_clicked(self):
+def btn_listen_clicked(self):
         # Currently when listen button is clicked, show the chat pane
         self.window.setCentralWidget(self.chat_pane)
 
@@ -228,7 +242,7 @@ class ChatUI():
 
 
 
-    def send(self):
+def send(self):
         user_typed = self.inp_message.text()
 
         # add "You: " and put it in display window
@@ -239,3 +253,8 @@ class ChatUI():
         self.inp_message.setText(None)
 
         self.connection.send(bytes(user_typed, 'utf-8'))
+
+        
+def choice_send(self, x, y): # a new method made by me for the noughts app where it sends the coordinates to the other person
+        self.connection.send(self.x, self.y)
+    
