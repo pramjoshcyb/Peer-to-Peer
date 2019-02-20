@@ -1,6 +1,7 @@
 from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QGridLayout, QSpacerItem
 from PyQt5.QtWidgets import QLabel, QPushButton, QLineEdit, QTextEdit, QRadioButton
+from PyQt5.QtGui import QMovie # import for the loading gif
 from PyQt5.QtGui import QPalette
 
 
@@ -13,6 +14,9 @@ from button import Button
 # inp_ is an input box
 # btn_ is a button
 # lbl_ is a label
+
+   
+# make sure you add the label to a layout
 
 
 
@@ -48,6 +52,7 @@ class App():
 
         # Create a GUI application
         app = QApplication([])
+    
 
         # Style app
         app.setStyle('Fusion')
@@ -143,45 +148,73 @@ class App():
 
     def create_game_pane(self):
         # Create the pane that allows the user to chat
-        chat_pane = QWidget()
+        game_pane = QWidget()
 
         # Create a layout for the chat pane
-        chat_layout = QGridLayout()
+        game_layout = QGridLayout()
+        loading_label = QLabel()
+        game_layout.addWidget(loading_label, 3, 0, 1, 4)
+        movie = QMovie("Ellipsis.gif")
+        loading_label.setMovie(movie)
+        movie.start()
 
         buttons = []
 
         for i in range(3):
             button_row = []
             for j in range(3):
-                button = Button(' ', self.make_choice, j, i)
-                chat_layout.addWidget(button, i, j) # C
+                button = Button(self.make_choice, j, i)
+                game_layout.addWidget(button, i, j) # C
                 button_row.append(button)
             buttons.append(button_row)
 
-        chat_pane.setLayout(chat_layout)
+        game_pane.setLayout(game_layout)
 
         self.buttons = buttons
-        self.chat_layout = chat_layout
-        self.chat_pane = chat_pane
+        self.game_layout = game_layout
+        self.game_pane = game_pane
+        self.loading_label = loading_label # hiding purposes
+
 
     def tick(self):
+        """for accepting, receiving and connecting,
+           tick method is called ten times a second
+        """
 
-        if self.accepting:
+        if self.accepting: # where its receiving a connection
             self.connection = self.listener.try_get_connection()
             if self.connection is not None:
+                # connection has been established
+                # loading_label = QLabel()
+                #self.loading_label = loading_label # hide loading label
+                self.loading_label.hide()
+                self.game_pane.adjustSize()
+                self.game_pane.updateGeometry()
+
                 self.accepting = False
                 self.receiving = True
-                #self.txt_history.append('Connected!\n')
+                # self.txt_history.append('Connected!\n')
         
         elif self.receiving:
             they_sent = self.connection.try_receive()
             if they_sent is not None:
                 display = 'Them: ' + str(they_sent, 'utf-8')
+                print(they_sent)
+                they_sent = str(they_sent, 'utf-8')
+                x = int(they_sent[1])
+                y = int(they_sent[0])
+                print(x)
+                print(y)
+                self.buttons[x][y].set_handler_O()
                 #self.txt_history.append(display)
 
         elif self.connection is not None:
             self.connection.try_connect()
             if self.connection.connected:
+                # connection being established on the client
+                # loading_label = QLabel()
+                # self.loading_label = loading_label # hide loading label
+                self.loading_label.hide() # to hide the loading gif once a conn has been made
                 self.receiving = True
                 #self.txt_history.append('Connected!\n')
         
@@ -190,7 +223,7 @@ class App():
 
     def btn_connect_clicked(self):
         # When connect button is clicked, show the chat pane
-        self.window.setCentralWidget(self.chat_pane)
+        self.window.setCentralWidget(self.game_pane)
 
         #self.txt_history.append('Connecting...')
 
@@ -200,7 +233,7 @@ class App():
 
     def btn_listen_clicked(self):
         # Currently when listen button is clicked, show the chat pane
-        self.window.setCentralWidget(self.chat_pane)
+        self.window.setCentralWidget(self.game_pane)
 
         #self.txt_history.append('Waiting for connection...')
 
@@ -223,6 +256,6 @@ class App():
 
         self.connection.send(bytes(user_typed, 'utf-8'))
 
-    def make_choice(x, y): # a new method made by me for the noughts app where it sends the coordinates to the other person
-        self.connection.send(x, y)
-    
+    def make_choice(self, x, y): # a new method made by me for the noughts app where it sends the coordinates to the other person
+        to_send = str(x) + str(y) # these are the coord of x and y in a tuple, need to convert to str to send to server
+        self.connection.send(bytes(to_send, 'utf-8'))

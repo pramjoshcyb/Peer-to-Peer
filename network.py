@@ -39,11 +39,10 @@ class Network():
 
         def send(self, bytes):
             """sends some data (a bytes object) to the other host"""
-            self.socket.send(bytes)
+            self.socket.send(bytes) # calls the send method on a Python socket (see socket docs)
 
         def try_receive(self):
-            """recieves and returns some data (a bytes object) from the other host"""
-
+            """receives and returns some data (a bytes object) from the other host"""
             (inputs_ready, dontcare, dontcare) = select.select([self.socket], [], [], 0)
 
             # inputs_ready == [] if no connection available
@@ -52,8 +51,9 @@ class Network():
             if len(inputs_ready) == 0:
                 return None
 
-            return self.socket.recv(1024)
+            # DECRYPT THE BYTES HERE BEFORE RETURNING
 
+            return self.socket.recv(1024)
     class Listener():
         """Encapsulates a thing listening for connections"""
 

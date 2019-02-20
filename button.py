@@ -6,8 +6,8 @@ import random
 class Button(QPushButton):
     """Create a button based on a QPushButton"""
 
-    def __init__(self, text, choice_fn, x, y):
-        super().__init__(text)
+    def __init__(self, choice_fn, x, y):
+        super().__init__(" ")
 
         random_number = random.randint(0, 101)
         if random_number < 20:
@@ -25,7 +25,7 @@ class Button(QPushButton):
         self.clicked.connect(self.click_handler)
 
 
-    def click_handler(self, x, y): # needs to have argument self, x and y position
+    def click_handler(self): # needs to have argument self, x and y position
         self.setText("X")
         self.setDisabled(True)
         self.choice_fn(self.x, self.y)
@@ -46,9 +46,14 @@ class Button(QPushButton):
         #         else:
         #             self.setText('X')
 
+    def set_handler_O(self): #method that calls an object and converts text to O
+        self.setText("O")
+        self.setDisabled(True)
+        # self.choice_fn(self.x, self.y)
+
         
 
-    def explode(self):
-        if self.mine:
-            self.setText('X')
+    # def explode(self):
+       # if self.mine:
+          #  self.setText('X')
 
