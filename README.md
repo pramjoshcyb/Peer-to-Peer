@@ -12,4 +12,5 @@
 
 6. Both players take turns to shift and fill the square buttons to achieve a row of three.
 
-7. Players will need to work out where to click the grid to stop the other player from either winning or blocking each other. 
+7. Players will need to work out where to click the grid to stop the other player from either winning or blocking each other.
+
