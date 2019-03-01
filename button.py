@@ -3,6 +3,8 @@ from PyQt5.QtWidgets import QPushButton
 import random
 
 
+
+
 class Button(QPushButton):
     """Create a button based on a QPushButton"""
 

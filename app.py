@@ -4,6 +4,9 @@ from PyQt5.QtWidgets import QLabel, QPushButton, QLineEdit, QTextEdit, QRadioBut
 from PyQt5.QtGui import QMovie # import for the loading gif
 from PyQt5.QtGui import QPalette
 
+""" PyQT DOCUMENTATION REFERENCES: https://doc.qt.io/qt-5/qpushbutton.html"""
+""" PyQT DOCUMENTATION REFERENCES: https://doc.qt.io/qt-5/qframe.html"""
+""" Python DOCUMENTATION REFERENCES: https://doc.qt.io/qt-5/topics-network-connectivity.html """
 
 from network import Network
 
