@@ -125,7 +125,7 @@ class App():
 
         
         # assemble everything into a container
-        show_help = QTextEdit('Hi player, wait for connection means that the interface is actively listening for connections to the other side, connect to... means that it can connect to another player, here is a URL to help see the instructions for the game: https://github.com/pramjoshcyb/Peer-to-Peer/blob/master/README.md ')
+        show_help = QTextEdit('Hi player, wait for connection means that the interface is actively listening for connections to the other side\n connect to... means that it can connect to another player\n, here is a URL to help see the instructions for the game: https://github.com/pramjoshcyb/Peer-to-Peer/blob/master/README.md ')
         help_pane = make_container_widget([show_help])
         connection_pane = make_container_widget([rad_listen, rad_connect, rad_help, listen_pane, connect_pane, help_pane])
         # set up the radio buttons to control which pane is visible
