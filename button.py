@@ -27,7 +27,7 @@ class Button(QPushButton):
         self.clicked.connect(self.click_handler)
 
 
-    def click_handler(self): # needs to have argument self, x and y position
+    def click_handler(self): """needs to have argument self, x and y position"""
         self.setText("X")
         self.setDisabled(True)
         self.choice_fn(self.x, self.y)
@@ -48,7 +48,8 @@ class Button(QPushButton):
         #         else:
         #             self.setText('X')
 
-    def set_handler_O(self): #method that calls an object and converts text to O
+    def set_handler_O(self): #method that calls an object and converts text to O 
+        """ method to set handler and set text as O"""
         self.setText("O")
         self.setDisabled(True)
         # self.choice_fn(self.x, self.y)
