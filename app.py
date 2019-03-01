@@ -88,14 +88,13 @@ class App():
         self.connection = None
 
     def run(self):
-        # Enter the application's main loop
-        # This method call doesn't end until the main window is closed
+        """Enter the application's main loop This method call doesn't end until the main window is closed"""
         self.app.exec_()
 
         print("Application was closed")
 
     def create_connection_pane(self):
-        # Create the pane that allows the user to initiate a connection
+        """Create the pane that allows the user to initiate a connection"""
 
         # choose listener or client radio buttons
         rad_listen  = QRadioButton('Wait for a connection')
@@ -133,19 +132,19 @@ class App():
         help_pane = make_container_widget([show_help])
         connection_pane = make_container_widget([rad_listen, rad_connect, rad_help, listen_pane, connect_pane, help_pane])
         # set up the radio buttons to control which pane is visible
-        def show_listen_pane():
+        def show_listen_pane(): """ method to show the pane to listen to connections"""
             connect_pane.hide()
             connection_pane.adjustSize()
             listen_pane.show()
             help_pane.hide()
 
-        def show_client_pane():
+        def show_client_pane(): """ method to show the client panes"""
             listen_pane.hide()
             connection_pane.adjustSize()
             connect_pane.show()
             help_pane.hide()
         
-        def show_help_pane():
+        def show_help_pane(): """ method to show the help pane"""
             listen_pane.hide()
             connection_pane.adjustSize()
             connect_pane.hide()
@@ -163,7 +162,7 @@ class App():
         self.inp_connect_address = inp_connect_address
 
     def create_game_pane(self):
-        # Create the pane that allows the user to chat
+        """Create the pane that allows the user to chat"""
         game_pane = QWidget()
 
         # Create a layout for the chat pane
@@ -238,7 +237,7 @@ class App():
 
 
     def btn_connect_clicked(self):
-        # When connect button is clicked, show the chat pane
+        """When connect button is clicked, show the chat pane"""
         self.window.setCentralWidget(self.game_pane)
 
         #self.txt_history.append('Connecting...')
@@ -248,7 +247,7 @@ class App():
 
 
     def btn_listen_clicked(self):
-        # Currently when listen button is clicked, show the chat pane
+        """Currently when listen button is clicked, show the chat pane"""
         self.window.setCentralWidget(self.game_pane)
 
         #self.txt_history.append('Waiting for connection...')
@@ -260,7 +259,7 @@ class App():
 
 
 
-    def send(self):
+    def send(self): """ method to send the information that the user types"""
         user_typed = self.inp_message.text()
 
         # add "You: " and put it in display window
@@ -275,3 +274,4 @@ class App():
     def make_choice(self, x, y): # a new method made by me for the noughts app where it sends the coordinates to the other person
         to_send = str(x) + str(y) # these are the coord of x and y in a tuple, need to convert to str to send to server
         self.connection.send(bytes(to_send, 'utf-8'))
+    """ method to make choice and send coordinates of the user input to the other side"""
