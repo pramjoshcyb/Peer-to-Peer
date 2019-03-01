@@ -97,6 +97,7 @@ class App():
         # choose listener or client radio buttons
         rad_listen  = QRadioButton('Wait for a connection')
         rad_connect = QRadioButton('Connect to...')
+        rad_help = QRadioButton('HELP') # help button
 
         rad_listen.setChecked(True)
 
@@ -122,23 +123,34 @@ class App():
 
         connect_pane = make_container_widget([lbl_connect_address, inp_connect_address, btn_connect])
 
-
+        
         # assemble everything into a container
-        connection_pane = make_container_widget([rad_listen, rad_connect, listen_pane, connect_pane])
-
+        show_help = QTextEdit('Hi player, wait for connection means that the interface is actively listening for connections to the other side, connect to... means that it can connect to another player, here is a URL to help see the instructions for the game: https://github.com/pramjoshcyb/Peer-to-Peer/blob/master/README.md ')
+        help_pane = make_container_widget([show_help])
+        connection_pane = make_container_widget([rad_listen, rad_connect, rad_help, listen_pane, connect_pane, help_pane])
         # set up the radio buttons to control which pane is visible
         def show_listen_pane():
             connect_pane.hide()
             connection_pane.adjustSize()
             listen_pane.show()
+            help_pane.hide()
 
         def show_client_pane():
             listen_pane.hide()
             connection_pane.adjustSize()
             connect_pane.show()
+            help_pane.hide()
+        
+        def show_help_pane():
+            listen_pane.hide()
+            connection_pane.adjustSize()
+            connect_pane.hide()
+            help_pane.show()
+        
         
         rad_listen.clicked.connect(show_listen_pane)
         rad_connect.clicked.connect(show_client_pane)
+        rad_help.clicked.connect(show_help_pane)
 
         show_listen_pane()
 
