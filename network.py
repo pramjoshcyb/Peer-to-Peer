@@ -6,9 +6,8 @@ import select
 class Network():
     class Connection():
         """Encapsulates a connection to a remote host"""
-
-        def __init__(self, host = None, port = None, socket_ = None): """ method to initialise the self attribute, host, port and socket"""
-
+        """method to initialise the self attribute, host, port and socket"""
+        def __init__(self, host = None, port = None, socket_ = None):
             if socket_ is not None:
                 self.socket = socket_
                 self.connected = True
@@ -57,7 +56,8 @@ class Network():
     class Listener():
         """Encapsulates a thing listening for connections"""
 
-        def __init__(self, port): """ method to initialise the ports and the self attributes"""
+        def __init__(self, port):
+            """ method to initialise the ports and the self attributes"""
             self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
             self.socket.bind(('0.0.0.0', port))
@@ -78,7 +78,8 @@ class Network():
 
             return Network.Connection(socket_ = client_socket)
 
-    def get_ip(): """ method to get the ip address from the address of internets"""
+    def get_ip():
+        """ method to get the ip address from the address of internets"""
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         try:
             # doesn't even have to be reachable

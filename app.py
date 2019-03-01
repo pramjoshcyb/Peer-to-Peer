@@ -132,19 +132,22 @@ class App():
         help_pane = make_container_widget([show_help])
         connection_pane = make_container_widget([rad_listen, rad_connect, rad_help, listen_pane, connect_pane, help_pane])
         # set up the radio buttons to control which pane is visible
-        def show_listen_pane(): """ method to show the pane to listen to connections"""
+        def show_listen_pane(): 
+            """method to show the pane to listen to connections"""
             connect_pane.hide()
             connection_pane.adjustSize()
             listen_pane.show()
             help_pane.hide()
 
-        def show_client_pane(): """ method to show the client panes"""
+        def show_client_pane():
+            """ method to show the client panes"""
             listen_pane.hide()
             connection_pane.adjustSize()
             connect_pane.show()
             help_pane.hide()
         
-        def show_help_pane(): """ method to show the help pane"""
+        def show_help_pane():
+            """ method to show the help pane"""
             listen_pane.hide()
             connection_pane.adjustSize()
             connect_pane.hide()
@@ -259,7 +262,8 @@ class App():
 
 
 
-    def send(self): """ method to send the information that the user types"""
+    def send(self):
+        """ method to send the information that the user types"""
         user_typed = self.inp_message.text()
 
         # add "You: " and put it in display window
